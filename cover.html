@@ -57,7 +57,7 @@
 				
 				<option value="file0">github.com/kaankoken/helper/pkg/helper/d_logger.go (100.0%)</option>
 				
-				<option value="file1">github.com/kaankoken/helper/pkg/helper/r_logger.go (75.0%)</option>
+				<option value="file1">github.com/kaankoken/helper/pkg/helper/r_logger.go (100.0%)</option>
 				
 				<option value="file2">github.com/kaankoken/helper/pkg/tag.go (100.0%)</option>
 				
@@ -199,7 +199,7 @@ import (
 // ReleaseModule -&gt; Dependency Injection for Release logger
 var ReleaseModule = fx.Options(
         fx.Provide(InitializeLogger, InitializeLoggerPtr),
-        fx.WithLogger(func(logger *zap.Logger) fxevent.Logger <span class="cov2" title="2">{
+        fx.WithLogger(func(logger *zap.Logger) fxevent.Logger <span class="cov3" title="3">{
                 return &amp;RLogger{Logger: logger}
         }</span>),
 )
@@ -217,7 +217,7 @@ InitializeLogger -&gt; Initialize zap logger for release mode
 
 [return] -&gt; return zap.logger
 */
-func InitializeLogger() *zap.Logger <span class="cov4" title="3">{
+func InitializeLogger() *zap.Logger <span class="cov4" title="4">{
         config := zap.NewProductionEncoderConfig()
         config.EncodeTime = zapcore.ISO8601TimeEncoder
         fileEncoder := zapcore.NewJSONEncoder(config)
@@ -241,7 +241,7 @@ InitializeLoggerPtr -&gt; Generate RLogger
 
 [return] -&gt; returns {Rlogger} that generated with {zap.logger}
 */
-func InitializeLoggerPtr(logger *zap.Logger, tag *pkg.Tag) *RLogger <span class="cov2" title="2">{
+func InitializeLoggerPtr(logger *zap.Logger, tag *pkg.Tag) *RLogger <span class="cov3" title="3">{
         return &amp;RLogger{Logger: logger, Tag: tag.T}
 }</span>
 
@@ -274,7 +274,7 @@ ErrorWithCallback -&gt; Release logger error logger with callback
 
 [return] -&gt; returns logger.Tag with {error} or {nil} if error does not {exist}
 */
-func (logger RLogger) ErrorWithCallback(err error, f func()) error <span class="cov6" title="6">{
+func (logger RLogger) ErrorWithCallback(err error, f func()) error <span class="cov4" title="6">{
         if err != nil </span><span class="cov4" title="4">{
                 f()
                 logger.Logger.Error(logger.Tag + err.Error())
@@ -318,67 +318,67 @@ LogEvent -&gt; Release logger for logging fx event
 
 [event] -&gt; take argument as fx.event
 */
-func (logger RLogger) LogEvent(event fxevent.Event) <span class="cov10" title="24">{
+func (logger RLogger) LogEvent(event fxevent.Event) <span class="cov10" title="60">{
         switch e := event.(type) </span>{
-        case *fxevent.OnStartExecuting:<span class="cov0" title="0">
+        case *fxevent.OnStartExecuting:<span class="cov4" title="4">
                 logger.Logger.Debug("OnStart hook executing: ",
                         zap.String("callee", e.FunctionName),
                         zap.String("caller", e.CallerName),
                 )</span>
-        case *fxevent.OnStartExecuted:<span class="cov0" title="0">
-                if e.Err != nil </span><span class="cov0" title="0">{
+        case *fxevent.OnStartExecuted:<span class="cov5" title="8">
+                if e.Err != nil </span><span class="cov4" title="4">{
                         logger.Logger.Debug("OnStart hook failed: ",
                                 zap.String("callee", e.FunctionName),
                                 zap.String("caller", e.CallerName),
                                 zap.Error(e.Err),
                         )
-                }</span> else<span class="cov0" title="0"> {
+                }</span> else<span class="cov4" title="4"> {
                         logger.Logger.Debug("OnStart hook executed: ",
                                 zap.String("callee", e.FunctionName),
                                 zap.String("caller", e.CallerName),
                                 zap.String("runtime", e.Runtime.String()),
                         )
                 }</span>
-        case *fxevent.OnStopExecuting:<span class="cov0" title="0">
+        case *fxevent.OnStopExecuting:<span class="cov4" title="5">
                 logger.Logger.Debug("OnStop hook executing: ",
                         zap.String("callee", e.FunctionName),
                         zap.String("caller", e.CallerName),
                 )</span>
-        case *fxevent.OnStopExecuted:<span class="cov0" title="0">
-                if e.Err != nil </span><span class="cov0" title="0">{
+        case *fxevent.OnStopExecuted:<span class="cov2" title="2">
+                if e.Err != nil </span><span class="cov1" title="1">{
                         logger.Logger.Debug("OnStop hook failed: ",
                                 zap.String("callee", e.FunctionName),
                                 zap.String("caller", e.CallerName),
                                 zap.Error(e.Err),
                         )
-                }</span> else<span class="cov0" title="0"> {
+                }</span> else<span class="cov1" title="1"> {
                         logger.Logger.Debug("OnStop hook executed: ",
                                 zap.String("callee", e.FunctionName),
                                 zap.String("caller", e.CallerName),
                                 zap.String("runtime", e.Runtime.String()),
                         )
                 }</span>
-        case *fxevent.Supplied:<span class="cov0" title="0">
+        case *fxevent.Supplied:<span class="cov2" title="2">
                 logger.Logger.Debug("supplied: ", zap.String("type", e.TypeName), zap.Error(e.Err))</span>
-        case *fxevent.Provided:<span class="cov8" title="12">
-                for _, rtype := range e.OutputTypeNames </span><span class="cov8" title="12">{
+        case *fxevent.Provided:<span class="cov7" title="18">
+                for _, rtype := range e.OutputTypeNames </span><span class="cov7" title="18">{
                         logger.Logger.Debug("provided: " + e.ConstructorName + " =&gt; " + rtype)
                 }</span>
-        case *fxevent.Decorated:<span class="cov0" title="0">
-                for _, rtype := range e.OutputTypeNames </span><span class="cov0" title="0">{
+        case *fxevent.Decorated:<span class="cov2" title="2">
+                for _, rtype := range e.OutputTypeNames </span><span class="cov2" title="2">{
                         logger.Logger.Debug("decorated: ",
                                 zap.String("decorator", e.DecoratorName),
                                 zap.String("type", rtype),
                         )
                 }</span>
-        case *fxevent.Invoking:<span class="cov4" title="3">
+        case *fxevent.Invoking:<span class="cov4" title="5">
                 logger.Logger.Debug("invoking: " + e.FunctionName)</span>
-        case *fxevent.Started:<span class="cov2" title="2">
-                if e.Err == nil </span><span class="cov2" title="2">{
+        case *fxevent.Started:<span class="cov3" title="3">
+                if e.Err == nil </span><span class="cov3" title="3">{
                         logger.Logger.Debug("started")
                 }</span>
-        case *fxevent.LoggerInitialized:<span class="cov2" title="2">
-                if e.Err == nil </span><span class="cov2" title="2">{
+        case *fxevent.LoggerInitialized:<span class="cov3" title="3">
+                if e.Err == nil </span><span class="cov3" title="3">{
                         logger.Logger.Debug("initialized: custom fxevent.Logger -&gt; " + e.ConstructorName)
                 }</span>
         }
