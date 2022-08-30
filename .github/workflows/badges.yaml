@@ -57,8 +57,8 @@ jobs:
       - name: Create the Badge
         uses: schneegans/dynamic-badges-action@master
         with:
-          auth: ${{ secrects.GIST_SECRET }}
-          gistID: ${{ secrects.GIST_ID }}
+          auth: ${{ secrets.GIST_KEY }}
+          gistID: ${{ secrets.GIST_ID }}
           filename: helper-coverage.json
           label: Coverage
           message: ${{ env.COV }}
