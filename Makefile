@@ -1,3 +1,6 @@
+build:
+	go build main.go
+
 lint:
 	golint ./...
 
