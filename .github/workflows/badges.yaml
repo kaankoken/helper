@@ -56,17 +56,25 @@ jobs:
 
       - name: Get Gist Id
         run: |
-          echo "${{ secrets.GIST_KEY }}" > ./gist.env.asc
+          echo "${{ secrets.GIST_ID }}" > ./gist.env.asc
           echo "GIST_ID=$(gpg -d --passphrase "${{ secrets.PARAPHRASE }}" --batch ./gist.env.asc > ./gist.env | cat)" >> $GITHUB_ENV
           rm -rf gist.env.asc
           rm -rf gist.env
 
+      - name: Get Gist Id
+        run: |
+          echo "${{ secrets.GIST_KEY }}" > ./gist.env.asc
+          echo "GIST_SECRET=$(gpg -d --passphrase "${{ secrets.PARAPHRASE }}" --batch ./gist.env.asc > ./gist.env | cat)" >> $GITHUB_ENV
+          rm -rf gist.env.asc
+          rm -rf gist.env
+
+
       - name: Create the Badge
         uses: schneegans/dynamic-badges-action@master
         with:
-          auth: ${{ secrets.GIST_SECRET }}
+          auth: ${{ env.GIST_SECRET }}
           gistID: ${{ env.GIST_ID }}
-          filename: coverage.json
+          filename: helper-coverage.jsoncoverage.json
           label: Coverage
           message: ${{ env.COV }}
           valColorRange: ${{ env.COV }}
