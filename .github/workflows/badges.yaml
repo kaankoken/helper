@@ -23,9 +23,9 @@ jobs:
 
       - name: Verify dependencies
         run: go mod verify
-     
-      - name: Build
-        run: make build
+      
+      - name: Tidy
+        run: go mod tidy
 
       - name: Run go vet
         run: make run-vet
@@ -44,7 +44,7 @@ jobs:
 
       - name: Run Test
         run: make test
- 
+
   create-coverage-badges:
     name: Create Coverage Badges
     runs-on: ubuntu-latest
@@ -60,7 +60,7 @@ jobs:
           echo "GIST_ID=$(gpg -d --passphrase "${{ secrets.PARAPHRASE }}" --batch ./gist.env.asc > ./gist.env | cat)" >> $GITHUB_ENV
           rm -rf gist.env.asc
           rm -rf gist.env
-          
+
       - name: Create the Badge
         uses: schneegans/dynamic-badges-action@master
         with:
