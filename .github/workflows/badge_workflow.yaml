@@ -19,6 +19,7 @@ jobs:
   create-coverage-badges:
     name: Create Coverage Badges
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v3
       - name: Get Coverage Percentage
