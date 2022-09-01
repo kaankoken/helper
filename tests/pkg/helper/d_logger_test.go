@@ -123,7 +123,7 @@ func TestDebugLoggerWithFx(t *testing.T) {
 			fx.WithLogger(func() fxevent.Logger { return fxtest.NewTestLogger(t) }),
 			helper.DebugModule,
 			fx.Populate(&g),
-			pkg.FakeModule,
+			pkg.FakeTagModule,
 		).RequireStart()
 
 		defer app.RequireStop()
@@ -143,7 +143,7 @@ func TestDebugLoggerWithFx(t *testing.T) {
 			helper.DebugModule,
 			fx.Populate(&g),
 			fx.Populate(&l),
-			pkg.FakeModule,
+			pkg.FakeTagModule,
 		).RequireStart()
 
 		defer app.RequireStop()
