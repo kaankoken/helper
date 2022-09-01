@@ -123,7 +123,7 @@ func TestReleaseLoggerWithFx(t *testing.T) {
 			fx.WithLogger(func() fxevent.Logger { return fxtest.NewTestLogger(t) }),
 			helper.ReleaseModule,
 			fx.Populate(&g),
-			pkg.FakeModule,
+			pkg.FakeTagModule,
 		).RequireStart()
 
 		defer app.RequireStop()
@@ -143,7 +143,7 @@ func TestReleaseLoggerWithFx(t *testing.T) {
 			helper.ReleaseModule,
 			fx.Populate(&g),
 			fx.Populate(&l),
-			pkg.FakeModule,
+			pkg.FakeTagModule,
 		).RequireStart()
 
 		defer app.RequireStop()
@@ -255,7 +255,7 @@ func TestReleaseLoggerWithFx(t *testing.T) {
 			helper.ReleaseModule,
 			fx.Populate(&g),
 			fx.Populate(&l),
-			pkg.FakeModule,
+			pkg.FakeTagModule,
 		).RequireStart()
 
 		defer app.RequireStop()
