@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/kaankoken/helper/pkg"
-	"github.com/kaankoken/helper/pkg/helper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/fx"
@@ -29,9 +28,8 @@ func TestTagWithFx(t *testing.T) {
 			t,
 			fx.Logger(fxtest.NewTestPrinter(t)),
 			fx.WithLogger(func() fxevent.Logger { return fxtest.NewTestLogger(t) }),
-			helper.DebugModule,
 			fx.Populate(&g),
-			pkg.FakeModule,
+			pkg.FakeTagModule,
 		).RequireStart()
 
 		defer app.RequireStop()
@@ -40,7 +38,7 @@ func TestTagWithFx(t *testing.T) {
 		assert.Contains(t, g, `"fx.DotGraph" [label=<fx.DotGraph>];`)
 	})
 
-	t.Run("d-logger=injection-test-with-functions", func(t *testing.T) {
+	t.Run("tag=injection-test-with-functions", func(t *testing.T) {
 		var g fx.DotGraph
 		var l *pkg.Tag
 
@@ -48,17 +46,14 @@ func TestTagWithFx(t *testing.T) {
 			t,
 			fx.Logger(fxtest.NewTestPrinter(t)),
 			fx.WithLogger(func() fxevent.Logger { return fxtest.NewTestLogger(t) }),
-			helper.DebugModule,
 			fx.Populate(&g),
 			fx.Populate(&l),
-			pkg.FakeModule,
+			pkg.FakeTagModule,
 		).RequireStart()
 
 		defer app.RequireStop()
 
 		require.NoError(t, app.Err())
 		assert.Contains(t, g, `"fx.DotGraph" [label=<fx.DotGraph>];`)
-
-	},
-	)
+	})
 }
