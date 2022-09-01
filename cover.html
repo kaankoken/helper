@@ -3,7 +3,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<title>helper: Go Coverage Report</title>
+		<title>cmd: Go Coverage Report</title>
 		<style>
 			body {
 				background: black;
@@ -55,11 +55,17 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/kaankoken/helper/pkg/helper/d_logger.go (100.0%)</option>
+				<option value="file0">github.com/kaankoken/helper/cmd/main_app.go (100.0%)</option>
 				
-				<option value="file1">github.com/kaankoken/helper/pkg/helper/r_logger.go (100.0%)</option>
+				<option value="file1">github.com/kaankoken/helper/pkg/flavor.go (100.0%)</option>
 				
-				<option value="file2">github.com/kaankoken/helper/pkg/tag.go (100.0%)</option>
+				<option value="file2">github.com/kaankoken/helper/pkg/helper/d_logger.go (100.0%)</option>
+				
+				<option value="file3">github.com/kaankoken/helper/pkg/helper/handler.go (100.0%)</option>
+				
+				<option value="file4">github.com/kaankoken/helper/pkg/helper/r_logger.go (100.0%)</option>
+				
+				<option value="file5">github.com/kaankoken/helper/pkg/tag.go (100.0%)</option>
 				
 				</select>
 			</div>
@@ -82,7 +88,71 @@
 		</div>
 		<div id="content">
 		
-		<pre class="file" id="file0" style="display: none">package helper
+		<pre class="file" id="file0" style="display: none">package cmd
+
+import (
+        "context"
+
+        "github.com/kaankoken/helper/pkg"
+        "github.com/kaankoken/helper/pkg/helper"
+        "go.uber.org/fx"
+)
+
+func MainApp() *fx.App <span class="cov1" title="1">{
+        app := fx.New(
+                pkg.FakeTagModule,
+                pkg.FakeFlavorDevModule,
+                helper.LoggerModule,
+                fx.Invoke(RegisterHooks),
+        )
+
+        return app
+}</span>
+
+// RegisterHooks -&gt; Registering lifecycle of fx &amp; running http server (Gin)
+func RegisterHooks(lifecycle fx.Lifecycle, logger *helper.LogHandler) <span class="cov10" title="2">{
+        lifecycle.Append(
+                fx.Hook{
+                        OnStart: func(context.Context) error </span><span class="cov10" title="2">{
+                                logger.Info("Starting application")
+                                return nil
+                        }</span>,
+                        OnStop: func(context.Context) error <span class="cov10" title="2">{
+                                logger.Info("Stopping application")
+                                return nil
+                        }</span>,
+                },
+        )
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package pkg
+
+import (
+        "go.uber.org/fx"
+)
+
+// FakeTagModule -&gt; Fake DI module for fx
+var FakeFlavorDevModule = fx.Options(fx.Provide(FakeFlavorDevConstructorForDi))
+
+// FakeTagModule -&gt; Fake DI module for fx
+var FakeFlavorReleaseModule = fx.Options(fx.Provide(FakeFlavorReleaseConstructorForDi))
+
+// Flavor -&gt; Data type for {flavor} that needed by LogHandler
+type Flavor struct{ F string }
+
+// FakeFlavorConstructorForDi -&gt; Creating Fake tag needed by DI
+func FakeFlavorDevConstructorForDi() *Flavor <span class="cov10" title="2">{
+        return &amp;Flavor{F: "dev"}
+}</span>
+
+// FakeFlavorConstructorForDi -&gt; Creating Fake tag needed by DI
+func FakeFlavorReleaseConstructorForDi() *Flavor <span class="cov1" title="1">{
+        return &amp;Flavor{F: "release"}
+}</span>
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package helper
 
 import (
         "fmt"
@@ -183,7 +253,130 @@ func (logger DLogger) InfoWithCallback(msg string, f func()) string <span class=
 }</span>
 </pre>
 		
-		<pre class="file" id="file1" style="display: none">package helper
+		<pre class="file" id="file3" style="display: none">package helper
+
+import (
+        "github.com/kaankoken/helper/pkg"
+        "go.uber.org/fx"
+)
+
+const (
+        dev string = "dev"
+)
+
+// LoggerModule -&gt; Dependency Injection for General logger module
+var LoggerModule = fx.Options(
+        DebugModule,
+        ReleaseModule,
+        fx.Provide(Initialize),
+)
+
+// ILogHandler -&gt; General interface that both RLogger &amp; DLogger use
+type ILogHandler interface {
+        Error(err error) error
+        ErrorWithCallback(err error, f func()) error
+        Info(msg string) string
+        InfoWithCallback(msg string, f func()) string
+}
+
+// LogHandler -&gt; Dependency Injection Data Model for LoggerModule needs
+type LogHandler struct {
+        debug, release *ILogHandler
+        flavor         string
+}
+
+/*
+Initialize -&gt; Initialize General logger
+
+[c] -&gt; Passing config to seperate according to debug or release mode
+[D] -&gt; Passing DLogger to generate LogHandler
+[R] -&gt; Passing RLogger to generate LogHandler
+
+[return] -&gt; returns Generated LogHandler
+*/
+func Initialize(f *pkg.Flavor, D *DLogger, R *RLogger) *LogHandler <span class="cov5" title="3">{
+        var d, r ILogHandler
+
+        d = D
+        r = R
+
+        return &amp;LogHandler{debug: &amp;d, release: &amp;r, flavor: f.F}
+}</span>
+
+/*
+Error -&gt; LogHandler error logger without callback
+
+        -&gt; Checks whether error {nil} or {not}
+        -&gt; Calls {logger} according to {flavor}
+
+[err] -&gt; take parameter as error
+
+[return] -&gt; returns tag with {error} or {nil} if error does not {exist}
+*/
+func (l LogHandler) Error(err error) error <span class="cov8" title="6">{
+        if l.flavor == dev </span><span class="cov6" title="4">{
+                return (*l.debug).Error(err)
+        }</span>
+
+        <span class="cov3" title="2">return (*l.release).Error(err)</span>
+}
+
+/*
+ErrorWithCallback -&gt; LogHandler error logger with callback
+
+        -&gt; Checks whether error {nil} or {not}
+        -&gt; Calls {logger} according to {flavor}
+
+[err] -&gt; take parameter as error
+[f] -&gt; callback method needs to be called if error {exist}
+
+[return] -&gt; returns tag with {error} or {nil} if error does not {exist}
+*/
+func (l LogHandler) ErrorWithCallback(err error, f func()) error <span class="cov10" title="9">{
+        if l.flavor == dev </span><span class="cov8" title="6">{
+                return (*l.debug).ErrorWithCallback(err, f)
+        }</span>
+
+        <span class="cov5" title="3">return (*l.release).ErrorWithCallback(err, f)</span>
+}
+
+/*
+Info -&gt; LogHandler info logger without callback
+
+        -&gt; Calls {logger} according to {flavor}
+
+[msg] -&gt; take string message as parameter
+
+[return] -&gt; returns tag with {msg}
+*/
+func (l LogHandler) Info(msg string) string <span class="cov5" title="3">{
+        if l.flavor == dev </span><span class="cov3" title="2">{
+                return (*l.debug).Info(msg)
+        }</span>
+
+        <span class="cov1" title="1">return (*l.release).Info(msg)</span>
+}
+
+/*
+InfoWithCallback -&gt; LogHandler info logger without callback
+
+        -&gt; Calls {logger} according to {flavor}
+
+[msg] -&gt; take string message as parameter
+[f] -&gt; callback method needs to be called
+
+[return] -&gt; returns tag with {msg}
+*/
+func (l LogHandler) InfoWithCallback(msg string, f func()) string <span class="cov8" title="6">{
+        if l.flavor == dev </span><span class="cov6" title="4">{
+                return (*l.debug).InfoWithCallback(msg, f)
+        }</span>
+
+        <span class="cov3" title="2">return (*l.release).InfoWithCallback(msg, f)</span>
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package helper
 
 import (
         "fmt"
@@ -385,12 +578,12 @@ func (logger RLogger) LogEvent(event fxevent.Event) <span class="cov10" title="6
 }
 </pre>
 		
-		<pre class="file" id="file2" style="display: none">package pkg
+		<pre class="file" id="file5" style="display: none">package pkg
 
 import "go.uber.org/fx"
 
-// FakeModule -&gt; Fake DI module for fx
-var FakeModule = fx.Options(fx.Provide(FakeConstructorForDi))
+// FakeTagModule -&gt; Fake DI module for fx
+var FakeTagModule = fx.Options(fx.Provide(FakeConstructorForDi))
 
 // Tag -&gt;  Data type for {Tag} that needed by loggers
 type Tag struct{ T string }
