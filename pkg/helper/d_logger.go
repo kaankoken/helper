@@ -13,8 +13,7 @@ var DebugModule = fx.Options(fx.Provide(SetLoggerFormat))
 
 // DLogger -> Dependency Injection Data Model for Debug logger
 type DLogger struct {
-	Logger *log.Logger
-	Tag    string
+	Tag string
 }
 
 /*
@@ -27,7 +26,7 @@ SetLoggerFormat -> Debug logger formatter initialization
 func SetLoggerFormat(tag *pkg.Tag) *DLogger {
 	log.SetFormatter(&log.TextFormatter{})
 
-	return &DLogger{Logger: &log.Logger{}, Tag: tag.T}
+	return &DLogger{Tag: tag.T}
 }
 
 /*
@@ -41,7 +40,7 @@ Error -> Debug logger error logger without callback
 */
 func (logger DLogger) Error(err error) error {
 	if err != nil {
-		logger.Logger.Error(logger.Tag, err.Error())
+		log.Error(logger.Tag, err.Error())
 
 		return fmt.Errorf("%s", logger.Tag+err.Error())
 	}
@@ -62,7 +61,7 @@ ErrorWithCallback -> Debug logger error logger with callback
 func (logger DLogger) ErrorWithCallback(err error, f func()) error {
 	if err != nil {
 		f()
-		logger.Logger.Error(logger.Tag, err.Error())
+		log.Error(logger.Tag, err.Error())
 
 		return fmt.Errorf("%s", logger.Tag+err.Error())
 	}
@@ -78,7 +77,7 @@ Info -> Debug logger info logger without callback
 [return] -> returns logger.Tag with {msg}
 */
 func (logger DLogger) Info(msg string) string {
-	logger.Logger.Infoln(logger.Tag, msg)
+	log.Info(logger.Tag, msg)
 
 	return fmt.Sprintf(logger.Tag + msg)
 }
@@ -93,7 +92,7 @@ InfoWithCallback -> Debug logger info logger without callback
 */
 func (logger DLogger) InfoWithCallback(msg string, f func()) string {
 	f()
-	logger.Logger.Infoln(logger.Tag, msg)
+	log.Info(logger.Tag, msg)
 
 	return fmt.Sprintf(logger.Tag + msg)
 }
