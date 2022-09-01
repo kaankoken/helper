@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"github.com/kaankoken/helper/pkg"
 	"go.uber.org/fx"
 )
 
@@ -29,9 +30,6 @@ type LogHandler struct {
 	flavor         string
 }
 
-// Flavor -> Data type for {flavor} that needed by LogHandler
-type Flavor struct{ F string }
-
 /*
 Initialize -> Initialize General logger
 
@@ -41,7 +39,7 @@ Initialize -> Initialize General logger
 
 [return] -> returns Generated LogHandler
 */
-func Initialize(f *Flavor, D *DLogger, R *RLogger) *LogHandler {
+func Initialize(f *pkg.Flavor, D *DLogger, R *RLogger) *LogHandler {
 	var d, r ILogHandler
 
 	d = D
