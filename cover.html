@@ -98,6 +98,7 @@ import (
         "go.uber.org/fx"
 )
 
+// MainApp -&gt; Creates new app that using all DI modules
 func MainApp() *fx.App <span class="cov1" title="1">{
         app := fx.New(
                 pkg.FakeTagModule,
@@ -132,21 +133,21 @@ import (
         "go.uber.org/fx"
 )
 
-// FakeTagModule -&gt; Fake DI module for fx
+// FakeFlavorDevModule -&gt; Fake DI module for fx
 var FakeFlavorDevModule = fx.Options(fx.Provide(FakeFlavorDevConstructorForDi))
 
-// FakeTagModule -&gt; Fake DI module for fx
+// FakeFlavorReleaseModule -&gt; Fake DI module for fx
 var FakeFlavorReleaseModule = fx.Options(fx.Provide(FakeFlavorReleaseConstructorForDi))
 
 // Flavor -&gt; Data type for {flavor} that needed by LogHandler
 type Flavor struct{ F string }
 
-// FakeFlavorConstructorForDi -&gt; Creating Fake tag needed by DI
+// FakeFlavorDevConstructorForDi -&gt; Creating Fake tag needed by DI
 func FakeFlavorDevConstructorForDi() *Flavor <span class="cov10" title="2">{
         return &amp;Flavor{F: "dev"}
 }</span>
 
-// FakeFlavorConstructorForDi -&gt; Creating Fake tag needed by DI
+// FakeFlavorReleaseConstructorForDi -&gt; Creating Fake tag needed by DI
 func FakeFlavorReleaseConstructorForDi() *Flavor <span class="cov1" title="1">{
         return &amp;Flavor{F: "release"}
 }</span>

@@ -1,8 +1,8 @@
 mode: atomic
-github.com/kaankoken/helper/cmd/main_app.go:11.24,20.2 2 1
-github.com/kaankoken/helper/cmd/main_app.go:23.71,26.41 1 2
-github.com/kaankoken/helper/cmd/main_app.go:26.41,29.5 2 2
-github.com/kaankoken/helper/cmd/main_app.go:30.40,33.5 2 2
+github.com/kaankoken/helper/cmd/main_app.go:12.24,21.2 2 1
+github.com/kaankoken/helper/cmd/main_app.go:24.71,27.41 1 2
+github.com/kaankoken/helper/cmd/main_app.go:27.41,30.5 2 2
+github.com/kaankoken/helper/cmd/main_app.go:31.40,34.5 2 2
 github.com/kaankoken/helper/pkg/flavor.go:17.46,19.2 1 2
 github.com/kaankoken/helper/pkg/flavor.go:22.50,24.2 1 1
 github.com/kaankoken/helper/pkg/helper/d_logger.go:26.45,30.2 2 2
