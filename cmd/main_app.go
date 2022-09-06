@@ -8,6 +8,7 @@ import (
 	"go.uber.org/fx"
 )
 
+// MainApp -> Creates new app that using all DI modules
 func MainApp() *fx.App {
 	app := fx.New(
 		pkg.FakeTagModule,
