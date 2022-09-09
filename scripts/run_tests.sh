@@ -28,6 +28,19 @@ do
     filename=${filename%"_test.go"}
     filename="${filename}.go"
 
+    res=$(go test -v $line | grep "FAIL")
+    count=$(echo $res | wc -l)
+
+    if [[ $res != "" && $count -ne 0 ]]
+    then
+        echo $res
+      
+        rm -rf cover.tmp.out
+        find . -type f -name 'text.log' -delete
+
+        exit 1
+    fi
+
     go test -v -coverpkg=./... $line -coverprofile=cover.tmp.out -covermode=atomic --tags=unit
     
     if [ $isFirstLineAdded == 0 ]
